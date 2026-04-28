@@ -6,6 +6,7 @@ import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 
 import authRoutes from "./routes/auth.routes.js";
+import userRoutes from "./routes/user.routes.js";
 import { errorHandler } from "./middleware/error.middleware.js";
 
 const app = express();
@@ -41,6 +42,7 @@ app.use(cookieParser());
 
 // 6. Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/user", userRoutes);
 
 // 7. Error handler (ALWAYS LAST)
 app.use(errorHandler);

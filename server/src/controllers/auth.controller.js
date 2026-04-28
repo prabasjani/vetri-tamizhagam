@@ -10,28 +10,66 @@ import {
 // REGISTER
 export const register = async (req, res, next) => {
   try {
-    const { name, email, password } = req.body;
+    const { email, password } = req.body;
 
-    const exists = await User.findOne({ email });
-    if (exists) {
-      return res.status(400).json({ message: "User already exists" });
+    // Validate
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and password are required",
+      });
     }
 
+    // Check existing user
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "User already exists with email!",
+      });
+    }
+
+    // Hash password
     const hashed = await hashPassword(password);
 
+    // Create user
     const user = await User.create({
-      name,
       email,
       password: hashed,
+      onboardingStep: 1,
     });
 
-    // remove password before return userdata
-    const userData = user.toObject();
-    delete userData.password;
+    // Generate tokens
+    const payload = {
+      userId: user._id,
+      role: user.role,
+    };
 
+    const accessToken = generateAccessToken(payload);
+    const refreshToken = generateRefreshToken(payload);
+
+    // Save refresh token
+    user.refreshToken = refreshToken;
+    await user.save();
+
+    // Set cookies
     res
-      .status(201)
-      .json({ success: true, message: "Registered Successfull", userData });
+      .cookie("accessToken", accessToken, {
+        ...cookieOptions,
+        maxAge: 15 * 60 * 1000, // 15 min
+      })
+      .cookie("refreshToken", refreshToken, {
+        ...cookieOptions,
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
+
+    // Response
+    res.status(201).json({
+      success: true,
+      message: "User Registered Successful",
+      user, // password auto removed via toJSON
+    });
   } catch (err) {
     next(err);
   }
@@ -61,14 +99,16 @@ export const login = async (req, res, next) => {
     await user.save();
 
     res
-      .cookie("refreshToken", refreshToken, cookieOptions)
-      .cookie("accessToken", accessToken, cookieOptions);
+      .cookie("accessToken", accessToken, {
+        ...cookieOptions,
+        maxAge: 15 * 60 * 1000, // 15 min
+      })
+      .cookie("refreshToken", refreshToken, {
+        ...cookieOptions,
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
 
-    const userData = user.toObject();
-    delete userData.password;
-    delete userData.refreshToken;
-
-    res.json({ success: true, message: "Logged In", accessToken, userData });
+    res.json({ success: true, message: "Logged In", accessToken, user });
   } catch (err) {
     next(err);
   }
@@ -105,8 +145,14 @@ export const refresh = async (req, res, next) => {
     await user.save();
 
     res
-      .cookie("refreshToken", newRefreshToken, cookieOptions)
-      .cookie("accessToken", newAccessToken, cookieOptions);
+      .cookie("accessToken", newAccessToken, {
+        ...cookieOptions,
+        maxAge: 15 * 60 * 1000, // 15 min
+      })
+      .cookie("refreshToken", newRefreshToken, {
+        ...cookieOptions,
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
 
     res.json({
       success: true,
@@ -137,4 +183,3 @@ export const logout = async (req, res, next) => {
     next(err);
   }
 };
-

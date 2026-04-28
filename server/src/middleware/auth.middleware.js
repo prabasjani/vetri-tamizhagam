@@ -5,7 +5,7 @@ export const protect = (req, res, next) => {
     const token = req.cookies.accessToken;
 
     if (!token) {
-      return res.status(401).json({ message: "Not authorized, no token" });
+      return res.status(401).json({ message: "Unauthorized entry" });
     }
 
     const decoded = verifyAccessToken(token);
