@@ -1,0 +1,93 @@
+@import url("https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #1a3c6e;
+  --color-primary-light: #2a5ba3;
+  /* --color-primary: #da251d; */
+  --color-secondary: #f4a520;
+  --color-background: #f5f7fa;
+  --color-surface: #ffffff;
+  --color-title: #1c1c1e;
+  --color-muted: #6b7280;
+  --color-success: #16a34a;
+  --color-danger: #dc2626;
+  --color-border: #d1d5db;
+  --font-ibm: "IBM Plex Sans", sans-serif;
+  --font-ibm-mono: "IBM Plex Mono", monospace;
+  --font-inter: "Inter", sans-serif;
+  --font-caveat: "Caveat", cursive;
+  --font-garamond: "EB Garamond", serif;
+}
+
+body {
+  @apply overflow-hidden min-h-dvh bg-background text-title;
+}
+
+h2 {
+  @apply text-[32px] text-primary font-semibold font-garamond;
+}
+
+h5 {
+  @apply text-[13px] font-ibm-mono text-muted mb-2;
+}
+
+p {
+  @apply text-sm text-muted font-ibm!;
+}
+
+.btn {
+  @apply px-8 py-2 rounded-md border border-primary bg-primary text-sm text-white font-semibold cursor-pointer hover:bg-primary-light;
+}
+
+.btn-1 {
+  @apply px-8 py-2 rounded-md border border-primary text-sm hover:bg-primary-light text-primary hover:text-white font-semibold cursor-pointer;
+}
+
+.trust-badge {
+  @apply flex items-center gap-1.5 text-xs text-muted font-ibm;
+}
+
+.trust-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-success);
+}
+
+.form-label {
+  @apply text-[13px] text-title font-ibm font-semibold flex items-center gap-1;
+}
+
+.form-required {
+  @apply text-xs text-danger;
+}
+
+.form-input {
+  @apply text-sm py-2.5 px-3.5 border border-border bg-surface rounded-md focus:outline-none focus:border focus:border-primary focus:shadow;
+}
+
+select,
+select::picker(select) {
+  appearance: base-select;
+}
+
+select::picker(select) {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 5px;
+}
+
+/* Style individual options */
+option {
+  padding: 8px;
+  border-radius: 4px;
+}
+
+/* Style the hovered or selected option */
+option:hover,
+option:checked {
+  background-color: var(--color-background);
+}

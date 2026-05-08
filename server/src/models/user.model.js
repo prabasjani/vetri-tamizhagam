@@ -23,15 +23,15 @@ const userSchema = new mongoose.Schema(
       enum: ["male", "female", "other"],
     },
     dob: { type: Date },
+
+    // Step 3 (Location)
     mobile: {
       type: String,
       unique: true,
     },
-
-    // Step 3 (Location)
     state: { type: String },
     district: { type: String },
-    area: { type: String },
+    constituency: { type: String },
 
     // Step 4 (Identity)
     identityType: {

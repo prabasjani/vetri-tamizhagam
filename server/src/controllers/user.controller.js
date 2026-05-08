@@ -40,7 +40,7 @@ export const updateOnboarding = async (req, res, next) => {
     // STEP-WISE HANDLING
     switch (step) {
       case 2:
-        const { fullname, gender, dob, mobile } = data;
+        const { fullname, gender, dob } = data;
 
         if (!fullname || !gender || !dob) {
           return res.status(400).json({
@@ -49,26 +49,26 @@ export const updateOnboarding = async (req, res, next) => {
           });
         }
 
+        updateData = { fullname, gender, dob };
+        break;
+
+      case 3:
+        const { mobile, state, district, constituency } = data;
+
         if (!isValidMobile(mobile)) {
           return res.status(400).json({
             message: "Invalid mobile number",
           });
         }
 
-        updateData = { fullname, gender, dob };
-        break;
-
-      case 3:
-        const { state, district, area } = data;
-
-        if (!state || !district || !area) {
+        if (!state || !district || !constituency) {
           return res.status(400).json({
             success: false,
             message: "All fields required for step 3",
           });
         }
 
-        updateData = { state, district, area };
+        updateData = { mobile, state, district, constituency };
         break;
 
       case 4:
@@ -176,6 +176,26 @@ export const completeOnboarding = async (req, res, next) => {
     res.json({
       success: true,
       message: "Onboarding completed",
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const profile = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.userId);
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Profile Fetch completed",
+      user,
     });
   } catch (err) {
     next(err);
